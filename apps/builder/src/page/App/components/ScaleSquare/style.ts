@@ -413,7 +413,6 @@ export const applyWrapperPendingStyle = (
   hasError: boolean,
   isDragging: boolean,
   isEditor: boolean,
-  isLimitedMode: boolean = false,
 ) => css`
   width: 100%;
   height: 100%;
@@ -429,7 +428,6 @@ export const applyWrapperPendingStyle = (
     ? globalColor(`--${illaPrefix}-red-07`)
     : "transparent"};
   opacity: ${isDragging ? 0 : 100};
-  ${isLimitedMode && isSelected ? `border-bottom:unset !important` : ""}
 `
 
 export const applyDashedLineStyle = (

@@ -1,10 +1,4 @@
-import {
-  MutableRefObject,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react"
+import { MutableRefObject, useEffect, useLayoutEffect, useRef } from "react"
 
 export const useAutoUpdateHeight = (
   handleUpdateHeight: (height: number) => void,
@@ -13,28 +7,26 @@ export const useAutoUpdateHeight = (
     dynamicMinHeight?: number
     dynamicMaxHeight?: number
   },
-): [MutableRefObject<HTMLDivElement | null>, number] => {
+): [MutableRefObject<HTMLDivElement | null>] => {
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const [realHeight, setRealHeight] = useState(0)
   const observerRef = useRef(
     new ResizeObserver((entries) => {
       if (!isMounted.current || !handleUpdateHeight) return
       const height = entries[0].contentRect.height
-      setRealHeight(height)
       if (
         dynamicOptions &&
         dynamicOptions.dynamicMaxHeight &&
-        height >= dynamicOptions.dynamicMaxHeight - 6
+        height >= dynamicOptions.dynamicMaxHeight
       ) {
-        handleUpdateHeight(dynamicOptions.dynamicMaxHeight - 6)
+        handleUpdateHeight(dynamicOptions.dynamicMaxHeight)
         return
       }
       if (
         dynamicOptions &&
         dynamicOptions.dynamicMinHeight &&
-        height <= dynamicOptions.dynamicMinHeight - 6
+        height <= dynamicOptions.dynamicMinHeight
       ) {
-        handleUpdateHeight(dynamicOptions.dynamicMinHeight - 6)
+        handleUpdateHeight(dynamicOptions.dynamicMinHeight)
         return
       }
       handleUpdateHeight?.(height)
@@ -51,15 +43,37 @@ export const useAutoUpdateHeight = (
   }, [])
 
   useLayoutEffect(() => {
-    if (observerRef.current && containerRef.current && enable) {
-      observerRef.current.observe(containerRef.current)
+    const observerRef = new ResizeObserver((entries) => {
+      if (!isMounted.current || !handleUpdateHeight) return
+      const height = entries[0].contentRect.height
+      if (
+        dynamicOptions &&
+        dynamicOptions.dynamicMaxHeight &&
+        height >= dynamicOptions.dynamicMaxHeight
+      ) {
+        handleUpdateHeight(dynamicOptions.dynamicMaxHeight)
+        return
+      }
+      if (
+        dynamicOptions &&
+        dynamicOptions.dynamicMinHeight &&
+        height <= dynamicOptions.dynamicMinHeight
+      ) {
+        handleUpdateHeight(dynamicOptions.dynamicMinHeight)
+        return
+      }
+      handleUpdateHeight?.(height)
+    })
+    if (observerRef && containerRef.current && enable) {
+      observerRef.unobserve(containerRef.current)
+      observerRef.observe(containerRef.current)
     }
 
     return () => {
       if (containerRef.current && enable) {
-        observerRef.current.unobserve(containerRef.current)
+        observerRef.unobserve(containerRef.current)
       }
     }
   }, [dynamicOptions, enable, handleUpdateHeight])
-  return [containerRef, realHeight]
+  return [containerRef]
 }

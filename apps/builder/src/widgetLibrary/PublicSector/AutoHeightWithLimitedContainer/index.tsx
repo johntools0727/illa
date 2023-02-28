@@ -12,7 +12,7 @@ import {
   containerStyle,
 } from "@/widgetLibrary/PublicSector/AutoHeightWithLimitedContainer/style"
 
-export const DEFAULT_HEIGHT = 80
+export const DEFAULT_MAX_HEIGHT = 80
 export const DEFAULT_MIN_GAP = 8
 
 const resizeHandler = {
@@ -30,7 +30,6 @@ export const AutoHeightWithLimitedContainer: FC<
   dynamicMinHeight,
   containerHeight,
   displayName,
-  resizeStart,
   handleUpdateComponentHeight,
 }) => {
   const dispatch = useDispatch()
@@ -47,7 +46,7 @@ export const AutoHeightWithLimitedContainer: FC<
       const deltaHeight = delta.height
       const finalDynamicMaxHeight =
         Math.round(
-          ((dynamicMaxHeight ?? containerHeight + DEFAULT_HEIGHT) +
+          ((dynamicMaxHeight ?? containerHeight + DEFAULT_MAX_HEIGHT) +
             deltaHeight) /
             UNIT_HEIGHT,
         ) * UNIT_HEIGHT
@@ -81,7 +80,9 @@ export const AutoHeightWithLimitedContainer: FC<
         }),
       )
       setTimeout(() => {
-        handleUpdateComponentHeight(finalDynamicMinHeight)
+        if (finalDynamicMinHeight > containerHeight * UNIT_HEIGHT) {
+          handleUpdateComponentHeight(finalDynamicMinHeight)
+        }
       }, 30)
       dispatch(configActions.updateShowDot(false))
     },
@@ -100,7 +101,7 @@ export const AutoHeightWithLimitedContainer: FC<
         size={{
           width: "100%",
           // 2 is padding with wrapper
-          height: `${dynamicMaxHeight + 2 ?? containerHeight + DEFAULT_HEIGHT}`,
+          height: `${dynamicMaxHeight ?? containerHeight + DEFAULT_MAX_HEIGHT}`,
         }}
         style={{
           position: "absolute",

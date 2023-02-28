@@ -6,6 +6,7 @@ import i18n from "@/i18n/config"
 import { runAction } from "@/page/App/components/Actions/ActionPanel/utils/runAction"
 import { runActionTransformer } from "@/page/App/components/Actions/ActionPanel/utils/runActionTransformerHelper"
 import { getContainerListDisplayNameMappedChildrenNodeDisplayName } from "@/redux/currentApp/editor/components/componentsSelector"
+import { IGNORE_ACTION_ATTR_NAME } from "@/redux/currentApp/executionTree/executionSelector"
 import {
   DependenciesState,
   ErrorShape,
@@ -32,6 +33,13 @@ import { isObject } from "@/utils/typeHelper"
 import { validationFactory } from "@/utils/validationFactory"
 
 const message = createMessage()
+export const IGNORE_ACTION_RUN_ATTR_NAME = [
+  ...IGNORE_ACTION_ATTR_NAME,
+  "data",
+  "runResult",
+  "runResult.error",
+  "runResult.message",
+]
 
 export class ExecutionTreeFactory {
   dependenciesState: DependenciesState = {}
@@ -612,7 +620,10 @@ export class ExecutionTreeFactory {
               debuggerData[fullPath] = oldError
             }
           }
-          if (isAction(widgetOrAction)) {
+          if (
+            isAction(widgetOrAction) &&
+            !IGNORE_ACTION_RUN_ATTR_NAME.includes(attrPath)
+          ) {
             for (let i = currentIndex + 1; i < sortedEvalOrder.length; i++) {
               const currentDynamicString = sortedEvalOrder[i]
               if (currentDynamicString.includes(widgetOrAction.displayName)) {

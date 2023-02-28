@@ -37,3 +37,14 @@ export interface UpdateExecutionByDisplayNamePayload {
   displayName: string
   value: Record<string, any>
 }
+
+interface ActionExtendInfo {
+  startTime: number
+  endTime: number
+  isRunning: boolean
+}
+
+export interface UpdateActionExtendInfoPayload {
+  displayName: string
+  extendInfo: Partial<ActionExtendInfo>
+}

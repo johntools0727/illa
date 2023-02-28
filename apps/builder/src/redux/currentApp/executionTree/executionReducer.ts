@@ -1,10 +1,10 @@
 import { CaseReducer, PayloadAction } from "@reduxjs/toolkit"
 import { applyChange } from "deep-diff"
-import { cloneDeep } from "lodash"
 import {
   DependenciesState,
   ErrorShape,
   ExecutionState,
+  UpdateActionExtendInfoPayload,
   UpdateExecutionByDisplayNamePayload,
   executionInitialState,
   setExecutionResultPayload,
@@ -120,4 +120,22 @@ export const resetExecutionResultReducer: CaseReducer<
   PayloadAction
 > = (state, action) => {
   return executionInitialState
+}
+
+export const updateActionExtendInfoReducer: CaseReducer<
+  ExecutionState,
+  PayloadAction<UpdateActionExtendInfoPayload>
+> = (state, action) => {
+  const { displayName, extendInfo } = action.payload
+  const currentAction = state.result[displayName]
+  if (!currentAction) return state
+  if (extendInfo.isRunning != undefined) {
+    currentAction.isRunning = extendInfo.isRunning
+  }
+  if (extendInfo.startTime != undefined) {
+    currentAction.startTime = extendInfo.startTime
+  }
+  if (extendInfo.endTime != undefined) {
+    currentAction.endTime = extendInfo.endTime
+  }
 }

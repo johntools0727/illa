@@ -6,6 +6,7 @@ import {
   setExecutionErrorReducer,
   setExecutionResultReducer,
   startExecutionReducer,
+  updateActionExtendInfoReducer,
   updateExecutionByDisplayNameReducer,
   updateExecutionByMultiDisplayNameReducer,
   updateModalDisplayReducer,
@@ -25,6 +26,7 @@ const executionSlice = createSlice({
     updateExecutionByMultiDisplayNameReducer,
     updateModalDisplayReducer,
     resetExecutionResultReducer,
+    updateActionExtendInfoReducer,
   },
 })
 

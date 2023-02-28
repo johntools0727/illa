@@ -6,6 +6,7 @@ import { getAllComponentDisplayNameMapProps } from "@/redux/currentApp/editor/co
 import { getCurrentUser } from "@/redux/currentUser/currentUserSelector"
 import { RootState } from "@/store"
 import { RawTreeFactory } from "@/utils/executionTreeHelper/rawTreeFactory"
+import { isAction } from "@/utils/executionTreeHelper/utils"
 import { isObject } from "@/utils/typeHelper"
 
 export const getRawTree = createSelector(
@@ -30,6 +31,26 @@ export const getExecution = (state: RootState) => state.currentApp.execution
 export const getExecutionResult = createSelector(
   [getExecution],
   (execution) => execution.result || {},
+)
+
+export const IGNORE_ACTION_ATTR_NAME = ["isRunning", "startTime", "endTime"]
+
+export const getWithIgnoreExecutionResult = createSelector(
+  [getExecution],
+  (execution) => {
+    const result = cloneDeep(execution.result) || {}
+    Object.keys(result).forEach((key) => {
+      const widgetOrAction = result[key]
+      if (widgetOrAction && isAction(widgetOrAction)) {
+        Object.keys(widgetOrAction).forEach((attrName) => {
+          if (IGNORE_ACTION_ATTR_NAME.includes(attrName)) {
+            delete widgetOrAction[attrName]
+          }
+        })
+      }
+    })
+    return result
+  },
 )
 
 export const getExecutionError = createSelector(

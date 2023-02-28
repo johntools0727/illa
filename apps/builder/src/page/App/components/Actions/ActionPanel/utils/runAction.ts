@@ -147,6 +147,16 @@ const calculateFetchResultDisplayName = (
       displayName: displayName,
       value: {
         data: calcResult,
+        runResult: undefined,
+      },
+    }),
+  )
+  store.dispatch(
+    executionActions.updateActionExtendInfoReducer({
+      displayName: displayName,
+      extendInfo: {
+        isRunning: false,
+        endTime: new Date().getTime(),
       },
     }),
   )
@@ -237,6 +247,15 @@ const fetchS3ClientResult = async (
     runAllEventHandler(realSuccessEvent)
   } catch (e) {
     resultCallback?.(e, true)
+    store.dispatch(
+      executionActions.updateActionExtendInfoReducer({
+        displayName: displayName,
+        extendInfo: {
+          isRunning: false,
+          endTime: new Date().getTime(),
+        },
+      }),
+    )
     const realFailedEvent: any[] = isTrigger
       ? failedEvent || []
       : getRealEventHandler(failedEvent)
@@ -277,11 +296,33 @@ const fetchActionResult = (
     runAllEventHandler(realSuccessEvent)
   }
   const failure = (res: AxiosResponse<ApiError>) => {
+    let runResult = {
+      error: true,
+      message: res?.data?.errorMessage || "An unknown error",
+    }
     resultCallback?.(res.data, true)
     const realSuccessEvent: any[] = isTrigger
       ? failedEvent || []
       : getRealEventHandler(failedEvent)
     runAllEventHandler(realSuccessEvent)
+    store.dispatch(
+      executionActions.updateExecutionByDisplayNameReducer({
+        displayName: displayName,
+        value: {
+          data: undefined,
+          runResult: runResult,
+        },
+      }),
+    )
+    store.dispatch(
+      executionActions.updateActionExtendInfoReducer({
+        displayName: displayName,
+        extendInfo: {
+          isRunning: false,
+          endTime: new Date().getTime(),
+        },
+      }),
+    )
   }
   const crash = (res: AxiosError) => {
     resultCallback?.(res, true)
@@ -292,6 +333,27 @@ const fetchActionResult = (
     message.error({
       content: "not online",
     })
+    store.dispatch(
+      executionActions.updateExecutionByDisplayNameReducer({
+        displayName: displayName,
+        value: {
+          data: undefined,
+          runResult: {
+            error: true,
+            message: "An unknown error",
+          },
+        },
+      }),
+    )
+    store.dispatch(
+      executionActions.updateActionExtendInfoReducer({
+        displayName: displayName,
+        extendInfo: {
+          isRunning: false,
+          endTime: new Date().getTime(),
+        },
+      }),
+    )
   }
 
   if (isPublic) {
@@ -495,6 +557,15 @@ export const runAction = (
     actionType,
     realContent,
   ) as ActionContent
+  store.dispatch(
+    executionActions.updateActionExtendInfoReducer({
+      displayName: displayName,
+      extendInfo: {
+        isRunning: true,
+        startTime: new Date().getTime(),
+      },
+    }),
+  )
 
   switch (actionType) {
     case "s3":

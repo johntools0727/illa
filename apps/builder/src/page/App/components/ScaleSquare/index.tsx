@@ -86,8 +86,8 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
 
   const isAutoLimitedMode = realProps?.dynamicHeight === "limited"
   const isOverLap =
-    (isAutoLimitedMode && realProps?.dynamicMaxHeight === h) ||
-    realProps.dynamicMinHeight === h
+    isAutoLimitedMode &&
+    (realProps?.dynamicMaxHeight === h || realProps?.dynamicMinHeight === h)
   const isDraggingStateInGlobal = useSelector(getIsDragging)
 
   const displayNameInMoveBar = useMemo(() => {

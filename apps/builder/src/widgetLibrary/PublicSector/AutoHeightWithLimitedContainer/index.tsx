@@ -1,5 +1,5 @@
 import { Resizable, ResizeCallback, ResizeStartCallback } from "re-resizable"
-import { FC, useCallback } from "react"
+import { FC, useCallback, useState } from "react"
 import { useDispatch } from "react-redux"
 import { UNIT_HEIGHT } from "@/page/App/components/DotPanel/renderComponentCanvas"
 import { applyBarHandlerStyle } from "@/page/App/components/ScaleSquare/style"
@@ -32,11 +32,22 @@ export const AutoHeightWithLimitedContainer: FC<
   handleUpdateComponentHeight,
 }) => {
   const dispatch = useDispatch()
+  const [resizeMaxHeight, setResizeMaxHeight] = useState(false)
+  const [resizeMinHeight, setResizeMinHeight] = useState(false)
 
   // const isOverlapWithMaxHeight = dynamicMaxHeight === containerHeight * UNIT_HEIGHT
 
   const resizeStartCallback: ResizeStartCallback = useCallback(
     (e, dir, elementRef) => {
+      setResizeMinHeight(true)
+      dispatch(configActions.updateShowDot(true))
+    },
+    [dispatch],
+  )
+
+  const resizeMaxHeightStartCallback: ResizeStartCallback = useCallback(
+    (e, dir, elementRef) => {
+      setResizeMaxHeight(true)
       dispatch(configActions.updateShowDot(true))
     },
     [dispatch],
@@ -44,6 +55,7 @@ export const AutoHeightWithLimitedContainer: FC<
 
   const resizeMaxHeightCallback: ResizeCallback = useCallback(
     (event, direction, elementRef, delta) => {
+      setResizeMaxHeight(false)
       const deltaHeight = delta.height
       const finalDynamicMaxHeight =
         Math.round(
@@ -66,6 +78,7 @@ export const AutoHeightWithLimitedContainer: FC<
 
   const resizeMinHeightCallback: ResizeCallback = useCallback(
     (event, direction, elementRef, delta) => {
+      setResizeMinHeight(false)
       const deltaHeight = delta.height
       const finalDynamicMinHeight =
         Math.round(
@@ -101,20 +114,20 @@ export const AutoHeightWithLimitedContainer: FC<
       <Resizable
         size={{
           width: "100%",
-          // 2 is padding with wrapper
           height: `${dynamicMaxHeight ?? containerHeight + DEFAULT_MAX_HEIGHT}`,
         }}
         style={{
           position: "absolute",
           top: "0",
           pointerEvents: "none",
+          backgroundColor: resizeMaxHeight ? "rgba(255, 88, 190, 0.1)" : "",
         }}
         minHeight={dynamicMinHeight + DEFAULT_MIN_GAP}
         handleComponent={resizeHandler}
         enable={{
           bottom: true,
         }}
-        onResizeStart={resizeStartCallback}
+        onResizeStart={resizeMaxHeightStartCallback}
         onResizeStop={resizeMaxHeightCallback}
         handleWrapperStyle={{
           pointerEvents: "all",
@@ -133,6 +146,7 @@ export const AutoHeightWithLimitedContainer: FC<
           position: "absolute",
           top: "0",
           pointerEvents: "none",
+          backgroundColor: resizeMinHeight ? "rgba(255, 88, 190, 0.1)" : "",
         }}
         minHeight={27}
         maxHeight={dynamicMaxHeight - DEFAULT_MIN_GAP}

@@ -9,29 +9,6 @@ export const useAutoUpdateHeight = (
   },
 ): [MutableRefObject<HTMLDivElement | null>] => {
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const observerRef = useRef(
-    new ResizeObserver((entries) => {
-      if (!isMounted.current || !handleUpdateHeight) return
-      const height = entries[0].contentRect.height
-      if (
-        dynamicOptions &&
-        dynamicOptions.dynamicMaxHeight &&
-        height >= dynamicOptions.dynamicMaxHeight
-      ) {
-        handleUpdateHeight(dynamicOptions.dynamicMaxHeight)
-        return
-      }
-      if (
-        dynamicOptions &&
-        dynamicOptions.dynamicMinHeight &&
-        height <= dynamicOptions.dynamicMinHeight
-      ) {
-        handleUpdateHeight(dynamicOptions.dynamicMinHeight)
-        return
-      }
-      handleUpdateHeight?.(height)
-    }),
-  )
 
   const isMounted = useRef(false)
 
@@ -49,17 +26,17 @@ export const useAutoUpdateHeight = (
       if (
         dynamicOptions &&
         dynamicOptions.dynamicMaxHeight &&
-        height >= dynamicOptions.dynamicMaxHeight
+        height >= dynamicOptions.dynamicMaxHeight - 6
       ) {
-        handleUpdateHeight(dynamicOptions.dynamicMaxHeight)
+        handleUpdateHeight(dynamicOptions.dynamicMaxHeight - 6)
         return
       }
       if (
         dynamicOptions &&
         dynamicOptions.dynamicMinHeight &&
-        height <= dynamicOptions.dynamicMinHeight
+        height <= dynamicOptions.dynamicMinHeight - 6
       ) {
-        handleUpdateHeight(dynamicOptions.dynamicMinHeight)
+        handleUpdateHeight(dynamicOptions.dynamicMinHeight - 6)
         return
       }
       handleUpdateHeight?.(height)

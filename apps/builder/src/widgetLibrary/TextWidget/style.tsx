@@ -24,9 +24,9 @@ const getRealHeightStyle = (
       `
     case "limited":
       return css`
-        min-height: ${dynamicMinHeight}px;
+        min-height: ${dynamicMinHeight - 6}px;
         height: auto;
-        max-height: ${dynamicMaxHeight}px;
+        max-height: ${dynamicMaxHeight - 6}px;
       `
     case "fixed":
       return `100%`
@@ -43,6 +43,7 @@ export const applyAutoHeightContainerStyle = (
   return css`
     display: flex;
     width: 100%;
+    position: relative;
     ${getRealHeightStyle(dynamicHeight, dynamicMinHeight, dynamicMAxHeight)};
   `
 }

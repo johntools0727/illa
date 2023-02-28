@@ -85,6 +85,9 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
   })
 
   const isAutoLimitedMode = realProps?.dynamicHeight === "limited"
+  const isOverLap =
+    (isAutoLimitedMode && realProps?.dynamicMaxHeight === h) ||
+    realProps.dynamicMinHeight === h
   const isDraggingStateInGlobal = useSelector(getIsDragging)
 
   const displayNameInMoveBar = useMemo(() => {
@@ -561,6 +564,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
             hasError,
             isDragging,
             isEditMode,
+            isOverLap,
           )}
           onClick={handleOnSelection}
           onContextMenu={handleContextMenu}
@@ -595,7 +599,8 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
         </div>
       </Dropdown>
       <div css={dragPreviewStyle} ref={dragPreviewRef} />
-      {selectedComponents?.length === 1 &&
+      {isEditMode &&
+        selectedComponents?.length === 1 &&
         isSelected &&
         isAutoLimitedMode &&
         !isDraggingStateInGlobal && (

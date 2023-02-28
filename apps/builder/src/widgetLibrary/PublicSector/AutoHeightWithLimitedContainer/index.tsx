@@ -8,8 +8,7 @@ import { componentsActions } from "@/redux/currentApp/editor/components/componen
 import { AutoHeightWithLimitedContainerProps } from "@/widgetLibrary/PublicSector/AutoHeightWithLimitedContainer/interface"
 import {
   applyResizeBarPointStyle,
-  bottomBarContainerStyle,
-  containerStyle,
+  containerBorderStyle,
 } from "@/widgetLibrary/PublicSector/AutoHeightWithLimitedContainer/style"
 
 export const DEFAULT_MAX_HEIGHT = 80
@@ -33,6 +32,8 @@ export const AutoHeightWithLimitedContainer: FC<
   handleUpdateComponentHeight,
 }) => {
   const dispatch = useDispatch()
+
+  // const isOverlapWithMaxHeight = dynamicMaxHeight === containerHeight * UNIT_HEIGHT
 
   const resizeStartCallback: ResizeStartCallback = useCallback(
     (e, dir, elementRef) => {
@@ -106,7 +107,6 @@ export const AutoHeightWithLimitedContainer: FC<
         style={{
           position: "absolute",
           top: "0",
-          zIndex: -1,
           pointerEvents: "none",
         }}
         minHeight={dynamicMinHeight + DEFAULT_MIN_GAP}
@@ -120,7 +120,9 @@ export const AutoHeightWithLimitedContainer: FC<
           pointerEvents: "all",
         }}
       >
-        <div css={containerStyle} />
+        <div css={containerBorderStyle("b")} />
+        <div css={containerBorderStyle("l")} />
+        <div css={containerBorderStyle("r")} />
       </Resizable>
       <Resizable
         size={{
@@ -144,7 +146,7 @@ export const AutoHeightWithLimitedContainer: FC<
           pointerEvents: "all",
         }}
       >
-        <div css={bottomBarContainerStyle} />
+        <div css={containerBorderStyle("b", 1)} />
       </Resizable>
     </>
   )

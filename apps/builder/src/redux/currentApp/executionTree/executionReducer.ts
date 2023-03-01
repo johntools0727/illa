@@ -121,21 +121,3 @@ export const resetExecutionResultReducer: CaseReducer<
 > = (state, action) => {
   return executionInitialState
 }
-
-export const updateActionExtendInfoReducer: CaseReducer<
-  ExecutionState,
-  PayloadAction<UpdateActionExtendInfoPayload>
-> = (state, action) => {
-  const { displayName, extendInfo } = action.payload
-  const currentAction = state.result[displayName]
-  if (!currentAction) return state
-  if (extendInfo.isRunning != undefined) {
-    currentAction.isRunning = extendInfo.isRunning
-  }
-  if (extendInfo.startTime != undefined) {
-    currentAction.startTime = extendInfo.startTime
-  }
-  if (extendInfo.endTime != undefined) {
-    currentAction.endTime = extendInfo.endTime
-  }
-}

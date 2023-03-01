@@ -10,7 +10,6 @@ import { componentsActions } from "@/redux/currentApp/editor/components/componen
 import {
   getExecutionResult,
   getRawTree,
-  getWithIgnoreExecutionResult,
 } from "@/redux/currentApp/executionTree/executionSelector"
 import { executionActions } from "@/redux/currentApp/executionTree/executionSlice"
 import { AppListenerEffectAPI, AppStartListening } from "@/store"
@@ -98,7 +97,7 @@ async function handleStartExecutionOnCanvas(
   listenerApi: AppListenerEffectAPI,
 ) {
   const rootState = listenerApi.getState()
-  const oldExecutionTree = getWithIgnoreExecutionResult(rootState)
+  const oldExecutionTree = getExecutionResult(rootState)
   if (executionTree) {
     const executionResult =
       executionTree.updateTreeFromExecution(oldExecutionTree)

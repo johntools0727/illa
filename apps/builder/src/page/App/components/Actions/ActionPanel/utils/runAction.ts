@@ -148,13 +148,6 @@ const calculateFetchResultDisplayName = (
       value: {
         data: calcResult,
         runResult: undefined,
-      },
-    }),
-  )
-  store.dispatch(
-    executionActions.updateActionExtendInfoReducer({
-      displayName: displayName,
-      extendInfo: {
         isRunning: false,
         endTime: new Date().getTime(),
       },
@@ -248,11 +241,15 @@ const fetchS3ClientResult = async (
   } catch (e) {
     resultCallback?.(e, true)
     store.dispatch(
-      executionActions.updateActionExtendInfoReducer({
+      executionActions.updateExecutionByDisplayNameReducer({
         displayName: displayName,
-        extendInfo: {
+        value: {
           isRunning: false,
           endTime: new Date().getTime(),
+          runResult: {
+            error: true,
+            message: (e as Error)?.message ?? "",
+          },
         },
       }),
     )
@@ -311,13 +308,6 @@ const fetchActionResult = (
         value: {
           data: undefined,
           runResult: runResult,
-        },
-      }),
-    )
-    store.dispatch(
-      executionActions.updateActionExtendInfoReducer({
-        displayName: displayName,
-        extendInfo: {
           isRunning: false,
           endTime: new Date().getTime(),
         },
@@ -338,19 +328,12 @@ const fetchActionResult = (
         displayName: displayName,
         value: {
           data: undefined,
+          isRunning: false,
+          endTime: new Date().getTime(),
           runResult: {
             error: true,
             message: "An unknown error",
           },
-        },
-      }),
-    )
-    store.dispatch(
-      executionActions.updateActionExtendInfoReducer({
-        displayName: displayName,
-        extendInfo: {
-          isRunning: false,
-          endTime: new Date().getTime(),
         },
       }),
     )
@@ -557,10 +540,11 @@ export const runAction = (
     actionType,
     realContent,
   ) as ActionContent
+
   store.dispatch(
-    executionActions.updateActionExtendInfoReducer({
+    executionActions.updateExecutionByDisplayNameReducer({
       displayName: displayName,
-      extendInfo: {
+      value: {
         isRunning: true,
         startTime: new Date().getTime(),
       },
